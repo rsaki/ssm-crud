@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
+    <!--注解驱动-->
+    <mvc:annotation-driven>
+
+        <!--安装Fastjson转换器-->
+        <mvc:message-converters register-defaults="false">
+            <bean id="fastJsonHttpMessageConverter"
+                  class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+                <!-- 加入支持的媒体类型：返回contentType -->
+                <property name="supportedMediaTypes">
+                    <list>
+                        <!-- 这里顺序不能反，一定先写text/html,不然ie下会出现下载提示 -->
+                        <value>text/html;charset=UTF-8</value>
+                        <value>application/json;charset=UTF-8</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!--注解扫描-->
+    <context:component-scan base-package="com.carpe.controller"/>
+
+    <!--静态资源默认的servlet配置-->
+    <mvc:default-servlet-handler/>
+
+    <!--静态资源配置-->
+    <mvc:annotation-driven/>
+    <mvc:resources mapping="/statics/**" location="/statics/"/>
+
+    <!--视图解析器
+      作用 ：1.捕获后端控制器的返回值 如果返回的是hello
+            2.解析：在返回值前后拼接 "/hello.jsp"
+    -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!--前缀-如果放webapp下面就/就可以了-->
+        <property name="prefix" value="/WEB-INF/jsp/"></property>
+        <!--后缀-->
+        <property name="suffix" value=".jsp"></property>
+    </bean>
+</beans>
+
+

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--Mybatis层-->
+
+    <!--导入log4j日志-->
+    <settings>
+        <setting name="logImpl" value="LOG4J"/>
+    </settings>
+
+    <!--配置数据源，交给Spring去做-->
+    <!--起别名-->
+    <typeAliases>
+        <package name="com.carpe.entity"/>
+    </typeAliases>
+
+    <!--实现分页插件-->
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            <property name="helperDialect" value="mysql"/>
+        </plugin>
+    </plugins>
+
+    <!--绑定mapper.xml-->
+    <!--如果在spring配置文件里写了<property name="mapperLocations" value="classpath:mapping/*.xml"/>
+    就不能在这些绑定mapper
+    -->
+<!--    <mappers>
+        <mapper class="com.carpe.mapper.BookMapper"></mapper>
+    </mappers>-->
+</configuration>

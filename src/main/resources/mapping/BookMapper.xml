@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.carpe.mapper.BookMapper">
+    <!--增加一本书-->
+    <insert id="addBooks" parameterType="Books">
+        insert into books(bookName,bookCounts,detail)
+        values (#{bookName}, #{bookCounts}, #{detail})
+    </insert>
+
+    <!--删除一本书-->
+    <delete id="deleteBookById" parameterType="int">
+        delete from books where bookID=#{bookId}
+    </delete>
+
+    <!--修改一本书-->
+    <update id="updateBook" parameterType="Books">
+        update books
+        set bookName=#{bookName},bookCounts=#{bookCounts},detail=#{detail}
+        where bookID=#{bookId}
+    </update>
+
+    <!--查询一本书-->
+    <select id="queryBookById" resultType="Books">
+        select * from books
+        where bookID = #{bookId}
+    </select>
+
+
+
+    <!--通过书名模糊查询-->
+    <select id="queryBookByName" resultType="Books">
+        SELECT * from books
+        <where>
+            <if test="bookName!=null and bookName!=''">
+                bookName like CONCAT ('%',#{bookName},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

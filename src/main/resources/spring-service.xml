@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    <!--Spring层-->
+
+    <!--扫描service下的包-->
+    <context:component-scan base-package="com.carpe.service"/>
+    <!--将所有业务类注入到Spring，可以通过注解@Service、@Autowired 或者 xml去实现-->
+    <bean id="BookServiceImpl" class="com.carpe.service.impl.BookServiceImpl">
+        <!--需要实现类的属性set方法动态注入-->
+        <property name="bookMapper" ref="bookMapper"/>
+    </bean>
+
+    <!--以下都是（这里还没用到）面向切面编程（Aspect Oriented Programming，缩写为AOP）-->
+    <!--声明式事务-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--注入数据源-->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+</beans>

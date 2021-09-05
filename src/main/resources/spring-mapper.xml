@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    <!--Spring层-->
+
+    <!--数据库连接池（这里用c3p0）
+    c3p0:自动化操作（自动化加载配置文件，并且可以设置到对象中）
+    dbcp:半自动化操作，不能自动连接
+    Druid：
+    1、替换DBCP和C3P0。Druid提供了一个高效、功能强大、可扩展性好的数据库连接池。
+    2、可以监控数据库访问性能，Druid内置提供了一个功能强大的StatFilter插件，能够详细统计SQL的执行性能，这对于线上分析数据库访问性能有帮助。
+    3、数据库密码加密。直接把数据库密码写在配置文件中，这是不好的行为，容易导致安全问题。DruidDruiver和DruidDataSource都支持PasswordCallback。
+    4、SQL执行日志，Druid提供了不同的LogFilter，能够支持Common-Logging、Log4j和JdkLog，你可以按需要选择相应的LogFilter，监控你应用的数据库访问情况。
+    5、扩展JDBC，如果你要对JDBC层有编程的需求，可以通过Druid提供的Filter机制，很方便编写JDBC层的扩展插件。
+    -->
+    <!--关联数据库配置文件-->
+    <context:property-placeholder location="classpath:database.properties"/>
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${jdbc.driver}"/>
+        <property name="jdbcUrl" value="${jdbc.url}"/>
+        <property name="user" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <!--最大/小的连接数量-->
+        <property name="maxPoolSize" value="30"/>
+        <property name="minPoolSize" value="10"/>
+        <!--连接池关闭后不自动连接-->
+        <property name="autoCommitOnClose" value="false"/>
+        <!--连接超过10秒就算连接超时-->
+        <property name="checkoutTimeout" value="10000"/>
+        <!--连接池在获得新连接失败时重试的次数，如果小于等于0则无限重试直至连接获得成功-->
+        <property name="acquireRetryAttempts" value="10"/>
+    </bean>
+    <!--    集成Druid连接池-->
+<!--        <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+            &lt;!&ndash;基本配置&ndash;&gt;
+            <property name="driverClassName" value="${jdbc.driver}"></property>
+            <property name="url" value="${jdbc.url}"></property>
+            <property name="username" value="${jdbc.username}"></property>
+            <property name="password" value="${jdbc.password}"></property>
+            &lt;!&ndash;配置初始化大小，最大，最小&ndash;&gt;
+            <property name="initialSize" value="${jdbc.init}"></property>
+            <property name="minIdle" value="${jdbc.minIdle}"></property>
+            <property name="maxActive" value="${jdbc.maxActive}"></property>
+            &lt;!&ndash;配置获取连接等待超时时间&ndash;&gt;
+            <property name="maxWait" value="60000"></property>
+            &lt;!&ndash;配置间隔多久时间才能进行一次检测，检测需要关闭的空闲连接，单位是毫秒&ndash;&gt;
+            <property name="timeBetweenEvictionRunsMillis" value="60000"></property>
+            &lt;!&ndash;配置一个连接池中最小生存时间，单位是毫秒&ndash;&gt;
+            <property name="minEvictableIdleTimeMillis" value="300000"></property>
+        </bean>-->
+
+    <!--以下都是控制反转（Inversion of Control，缩写为IoC）-->
+    <!--sqlSessionFactory-->
+    <bean name="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath:mapping/*.xml"/>
+    </bean>
+
+    <!--配置mapper接口扫描包，动态的实现mapper接口注入到Spring容器中-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--注入sqlSessionFactory-->
+        <property name="sqlSessionFactoryBeanName" value="sessionFactory"/>
+        <!--扫描的mapper包-->
+        <property name="basePackage" value="com.carpe.mapper"/>
+    </bean>
+</beans>
